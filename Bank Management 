@@ -1,0 +1,125 @@
+#CREATING DATABASE
+import mysql.connector as db
+mydb=db.connect(host="localhost",user="root",passwd="vj007.9495")
+mycursor=mydb.cursor()
+mycursor.execute("create database if not exists bank")
+mycursor.execute("use bank")
+#CREATING REQUIRED TABLES
+mycursor.execute("create table if not exists bank_master(acno
+char(4)primary key,name varchar(30),city char(20),mobileno char(10),balance
+int(6))")
+mycursor.execute("create table if not exists banktrans(acno char(4),amount
+int(6),dot date,ttype char(1),foreign key(acno)references
+bank_master(acno))")
+mydb.commit()
+
+while True:
+print("=-=-=-=-=-=-=-=-BANK OF PALAKKAD-=-=-=-=-=-=-=-=-=")
+print("1.CREATE ACCOUNT")
+print("2.DEPOSIT MONEY")
+print("3.WITHDRAW MONEY")
+print("4.DISPLAY ACCOUNT")
+print("5.EXIT")
+print()
+ch=int(input("Enter your choice:"))
+
+#PROCEDURE FOR CREATING A NEW ACCOUNT OF THE APPLICANT
+if ch==1:
+print()
+print("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+print()
+print("NOTE:-All information prompted are mandatory to be filled")
+print()
+acno=str(input("Enter Acc No :"))
+name=input("Enter name(limit 35 characters) : ")
+city=str(input("Enter city name :"))
+mn=str(input("Enter mobile no :"))
+balance=0
+mycursor.execute("insert into bank_master
+values('"+acno+"','"+name+"','"+city+"','"+mn+"','"+str(balance)+"')")
+mydb.commit()
+print()
+print()
+print()
+print("ACCOUNT IS SUCCESSFULLY CREATED")
+print()
+print("Your Account balance is:RS.0.00")
+print("---------------------------------------------------------")
+print()
+#PROCEDURE FOR UPDATING DETAILS AFTER THE DEPOSITION OF MONEY BY THE
+APPLICANT
+elif ch==2:
+acno=str(input("Enter Account number:"))
+dp=int(input("Enter Amount to be deposited:"))
+dot=str(input("Enter date of transaction(YEAR-MONTH-DATE):"))
+ttype="d"
+mycursor.execute("insert into banktrans
+values('"+acno+"','"+str(dp)+"','"+dot+"','"+ttype+"')")
+mycursor.execute("update bank_master set
+balance=balance+'"+str(dp)+"'where acno='"+acno+"'")
+mydb.commit()
+print()
+print()
+print()
+print("MONEY HAS BEEN DEPOSITED SUCCESSFULLY")
+print()
+mycursor.execute("select balance from bank_master where
+acno='"+acno+"'")
+for k in mycursor:
+d=list(k)
+q=k[0]
+print("Your account balance is :",q)
+print("---------------------------------------------------------------")
+print()
+#PROCEDURE FOR UPDATING THE DETAILS OF ACCOUNT AFTER THE WITHDRAWL OF THE
+MONEY BY THE APPLICANT
+elif ch==3:
+acno=str(input("Enter acc no:"))
+wd=int(input("Enter amount to be withdrawn:"))
+dot=str(input("Enter date of transaction:"))
+mycursor.execute("select balance from bank_master where
+acno='"+acno+"'")
+for k in mycursor:
+d=list(k)
+q=k[0]
+if q>wd:
+ttype="w"
+mycursor.execute("insert into banktrans
+values('"+acno+"','"+str(wd)+"','"+dot+"','"+ttype+"')")
+mycursor.execute("update bank_master set
+balance=balance-'"+str(wd)+"'where acno='"+acno+"'")
+mydb.commit()
+else:
+print("NO SUFFICIENT BALANCE IN YOUR ACC")
+print()
+print()
+print()
+print("Transaction successfully completed.....")
+print()
+#PROCEDURE FOR DISPLAYING THE ACC OF THE ACC HOLDER AFTER HE/SHE ENTER
+HIS/HER ACC NO
+elif ch==4:
+acno=str(input("Enter acc no:"))
+mycursor.execute("Select * from bank_master where acno='"+acno+"'")
+for i in mycursor:
+print()
+a=list(i)
+space=(" ")
+print("--------------------------------------------------------------------
+------------------------------------------------------")
+print("ACCOUNT NUMBER",space,"NAME",space,"CITY
+NAME",space,"MOBILE NUMBER",space,"BALANCE")
+print("--------------------------------------------------------------------
+------------------------------------------------------")
+print()
+print(" ",i[0],space," ",i[1],space,i[2],space,"
+",i[3],space," ",i[4])
+print()
+print("--------------------------------------------------------------------
+-----------------------------------------------------")
+print()
+else:
+print("THANK YOU FOR CHOOSING BANK OF PALAKKAD")
+print("IF YOU HAVE ANY QUERIES/COMPLAINTS CALL
+04921626278/0491232345")
+break
